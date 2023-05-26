@@ -1,0 +1,107 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct node{
+    struct node*left;
+    int data;
+    struct node*right;
+};
+
+struct node* createnewnode(int value){
+    struct node* newnode = (struct node*) malloc(sizeof(struct node));
+    newnode->data = value;
+    newnode->left = NULL;
+    newnode->right = NULL;
+    return newnode;
+}
+
+struct node* insert(struct node *root,int value){
+     if (root == NULL){//if node is not pointing to any node then creating a newnode
+        return createnewnode(value);
+    }
+    if (value < root->data){//if value is less than root node than place on the left side
+        root->left = insert(root->left, value);
+    } 
+    else if (value > root->data){//if value is more than root node than place on the right side
+        root->right = insert(root->right, value);
+    }
+    return root;
+}
+
+int Depth(struct node *root,int data){
+    if(root == NULL){
+        return -1;
+    }
+    else if(root->data == data){
+        return 1;
+    }
+    else if(data < root->data){
+        int d = Depth(root->left,data);
+        if(d == -1){
+            return -1;
+        }
+        else{
+            return d+1;
+        }
+    }
+    else{
+        int d = Depth(root->right,data);
+        if(d == -1){
+            return -1;
+        }
+        else{
+            return d+1;
+        }
+    }
+}
+
+int Height(struct node *root){
+    if (root == NULL){
+        return(-1);
+    }
+    else{
+        int leftheight = Height(root->left);
+        int rightheight = Height(root->right);
+        if(leftheight > rightheight){
+            return(leftheight+1);
+        }
+        else{
+            return(rightheight+1);
+        }
+    }
+}
+
+int main(){
+    struct node *root = NULL;
+    int choice,value,x,y,s;
+
+    while(1){
+        printf("Please enter your choice:\n");
+        printf("(1)Insert\n(2)Depth\n(3)Height\n");
+        scanf("%d",&choice);
+
+        switch(choice){
+            case 1:
+            printf("Enter the value to be inserted:\n");
+            scanf("%d",&value);
+            root = insert(root,value);
+            break;
+
+            case 2:
+            printf("Enter the value to be searched:\n");
+            scanf("%d",&s);
+            y = Depth(root,s);
+            printf("The Depth of %d in the Binary Tree is: %d\n",s,y);
+            break;
+
+            case 3:
+            x = Height(root);
+            printf("The Height of the Binary Tree is: %d\n",x);
+            break;
+
+            default:
+            printf("Invalid Choice\n");
+            break;
+        }
+    }
+}
