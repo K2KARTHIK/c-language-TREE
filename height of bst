@@ -1,0 +1,74 @@
+// height_bt
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a binary tree node
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Function to insert a node into the binary tree
+struct Node* insertNode(struct Node* root, int data) {
+    if (root == NULL) {
+        root = createNode(data);
+    } else {
+        // If the current node has an empty left child, insert the new node there
+        if (root->left == NULL)
+            root->left = insertNode(root->left, data);
+        // If the current node has an empty right child, insert the new node there
+        else if (root->right == NULL)
+            root->right = insertNode(root->right, data);
+        // If both left and right children are present, recursively traverse the tree
+        // to find the appropriate position for insertion
+        else {
+            // Choose either left or right subtree to maintain balance
+            if (rand() % 2 == 0)
+                root->left = insertNode(root->left, data);
+            else
+                root->right = insertNode(root->right, data);
+        }
+    }
+    return root;
+}
+
+// Function to find the height of a binary tree
+int findHeight(struct Node* root) {
+    if (root == NULL)
+        return 0;
+
+    int leftHeight = findHeight(root->left);
+    int rightHeight = findHeight(root->right);
+
+    return (leftHeight > rightHeight) ? (leftHeight + 1) : (rightHeight + 1);
+}
+
+int main() {
+    struct Node* root = NULL;
+    int n, data;
+
+    printf("Enter the number of elements in the binary tree: ");
+    scanf("%d", &n);
+
+    printf("Enter the elements:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &data);
+        root = insertNode(root, data);
+    }
+
+    int height = findHeight(root);
+
+    printf("Height of the binary tree is: %d\n", height);
+
+    return 0;
+}
