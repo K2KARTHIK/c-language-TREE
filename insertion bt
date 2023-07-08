@@ -1,0 +1,83 @@
+// insertion_bt
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a binary tree node
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Function to insert a node into the binary tree
+struct Node* insertNode(struct Node* root, int data) {
+    if (root == NULL) {
+        root = createNode(data);
+    } else {
+        // If the current node has an empty left child, insert the new node there
+        if (root->left == NULL)
+            root->left = insertNode(root->left, data);
+        // If the current node has an empty right child, insert the new node there
+        else if (root->right == NULL)
+            root->right = insertNode(root->right, data);
+        // If both left and right children are present, recursively traverse the tree
+        // to find the appropriate position for insertion
+        else {
+            // Choose either left or right subtree to maintain balance
+            if (rand() % 2 == 0)
+                root->left = insertNode(root->left, data);
+            else
+                root->right = insertNode(root->right, data);
+        }
+    }
+    return root;
+}
+
+// Function to perform inorder traversal of the binary tree
+void inorderTraversal(struct Node* root) {
+    if (root == NULL)
+        return;
+
+    inorderTraversal(root->left);
+    printf("%d ", root->data);
+    inorderTraversal(root->right);
+}
+
+int main() {
+    struct Node* root = NULL;
+    int n, data;
+
+    printf("Enter the number of elements in the binary tree: ");
+    scanf("%d", &n);
+
+    printf("Enter the elements:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &data);
+        root = insertNode(root, data);
+    }
+
+    printf("Inorder traversal of the binary tree: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    // Inserting a new element
+    int newData;
+    printf("Enter the element to insert: ");
+    scanf("%d", &newData);
+    root = insertNode(root, newData);
+
+    printf("Inorder traversal after inserting the element: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    return 0;
+}
