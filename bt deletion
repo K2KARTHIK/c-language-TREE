@@ -1,0 +1,173 @@
+// bt_deletion
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a binary tree node
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Function to insert a node into the binary tree
+struct Node* insertNode(struct Node* root, int data) {
+    if (root == NULL) {
+        root = createNode(data);
+    } else {
+        // If the current node has an empty left child, insert the new node there
+        if (root->left == NULL)
+            root->left = insertNode(root->left, data);
+        // If the current node has an empty right child, insert the new node there
+        else if (root->right == NULL)
+            root->right = insertNode(root->right, data);
+        // If both left and right children are present, recursively traverse the tree
+        // to find the appropriate position for insertion
+        else {
+            // Choose either left or right subtree to maintain balance
+            if (rand() % 2 == 0)
+                root->left = insertNode(root->left, data);
+            else
+                root->right = insertNode(root->right, data);
+        }
+    }
+    return root;
+}
+
+// Function to find the deepest node in the binary tree
+struct Node* findDeepestNode(struct Node* root) {
+    if (root == NULL)
+        return NULL;
+
+    struct Node* temp;
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear] = root;
+    rear++;
+
+    while (front != rear) {
+        temp = queue[front];
+        front++;
+
+        if (temp->left != NULL) {
+            queue[rear] = temp->left;
+            rear++;
+        }
+
+        if (temp->right != NULL) {
+            queue[rear] = temp->right;
+            rear++;
+        }
+    }
+
+    return temp;
+}
+
+// Function to delete a node from the binary tree
+struct Node* deleteNode(struct Node* root, int key) {
+    if (root == NULL)
+        return NULL;
+
+    if (root->left == NULL && root->right == NULL) {
+        if (root->data == key)
+            return NULL;
+        else
+            return root;
+    }
+
+    struct Node* deepestNode = findDeepestNode(root);
+    struct Node* keyNode = NULL;
+
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear] = root;
+    rear++;
+
+    while (front != rear) {
+        struct Node* temp = queue[front];
+        front++;
+
+        if (temp->data == key)
+            keyNode = temp;
+
+        if (temp->left) {
+            if (temp->left == deepestNode) {
+                temp->left = NULL;
+                free(deepestNode);
+                return root;
+            } else {
+                queue[rear] = temp->left;
+                rear++;
+            }
+        }
+         if (temp->right) {
+            if (temp->right == deepestNode) {
+                temp->right = NULL;
+                free(deepestNode);
+                return root;
+            } else {
+                queue[rear] = temp->right;
+                rear++;
+            }
+        }
+    }
+
+    if (keyNode != NULL) {
+        int keyData = keyNode->data;
+        keyNode->data = deepestNode->data;
+        deepestNode->data = keyData;
+        free(deepestNode);
+    }
+
+    return root;
+}
+
+// Function to perform inorder traversal of the binary tree
+void inorderTraversal(struct Node* root) {
+    if (root == NULL)
+        return;
+
+    inorderTraversal(root->left);
+    printf("%d ", root->data);
+    inorderTraversal(root->right);
+}
+
+int main() {
+    struct Node* root = NULL;
+    int n, data;
+
+    printf("Enter the number of elements in the binary tree: ");
+    scanf("%d", &n);
+
+    printf("Enter the elements:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &data);
+        root = insertNode(root, data);
+    }
+
+    printf("Inorder traversal of the binary tree: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    // Deleting an element
+    int deleteData;
+    printf("Enter the element to delete: ");
+    scanf("%d", &deleteData);
+    root = deleteNode(root, deleteData);
+
+    printf("Inorder traversal after deleting the element: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    return 0;
+}
